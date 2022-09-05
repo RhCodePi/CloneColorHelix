@@ -39,7 +39,10 @@ namespace rhcodepi
                 GameObject wallPiece = Instantiate(wallFragment, transform.position + offset, Quaternion.Euler(0,0,rotationZ));
                 rotationZ += (360 / wallFragmentCount);
                 if(rotationZ < rotationZMax)
+                {
                     wallPiece.transform.SetParent(wall1.transform);
+                    wallPiece.GetComponent<Renderer>().material.color = Color.red;
+                }
                 else
                     wallPiece.transform.SetParent(wall2.transform);
             }
