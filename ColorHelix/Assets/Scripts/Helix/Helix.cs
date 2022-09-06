@@ -13,11 +13,7 @@ namespace rhcodepi
         [SerializeField] float angleVel= 1.7f;
         public static Helix instance;
         private void Awake() => instance = this;
-        void Update()
-        {
-            Move();
-        }
-
+        void Update() => Move();
         void Move()
         {
             if(moveable && Touch.isPressing)
@@ -30,7 +26,7 @@ namespace rhcodepi
             else if(lastDeltaAngle != 0)
             {
                 lastDeltaAngle -= (lastDeltaAngle * 5 * Time.deltaTime);
-                angle += (lastTouchPos) * 360 * angleVel;
+                angle += (lastDeltaAngle) * 360 * angleVel;
             }
 
             transform.eulerAngles = new Vector3(0, 0, angle);
