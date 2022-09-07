@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace rhcodepi
 {
     public class Wall : MonoBehaviour
@@ -35,6 +34,8 @@ namespace rhcodepi
             wall1.name = "LeftSemiCircle";
             wall2.name = "RightSemiCircle";
 
+            wall1.tag =  "Collectable";
+
             wall1.transform.SetParent(transform);
             wall2.transform.SetParent(transform);
 
@@ -47,13 +48,13 @@ namespace rhcodepi
             wall1.AddComponent<BoxCollider>();
             wall1.GetComponent<BoxCollider>().isTrigger = true;
             wall1.GetComponent<BoxCollider>().center = new Vector3(-0.57f, -0.008f, wall2.transform.position.z);
-            wall1.GetComponent<BoxCollider>().size = new Vector3(0.9f, 1.9f, 0.15f);
+            wall1.GetComponent<BoxCollider>().size = new Vector3(0.9f, 1.9f, 0.05f);
 
             wall2.tag = "Cancel";
             wall2.AddComponent<BoxCollider>();
             wall2.GetComponent<BoxCollider>().isTrigger = true;
             wall2.GetComponent<BoxCollider>().center = new Vector3(0.47f, -0.008f, wall2.transform.position.z);
-            wall2.GetComponent<BoxCollider>().size = new Vector3(0.9f, 1.9f, 0.15f);
+            wall2.GetComponent<BoxCollider>().size = new Vector3(0.9f, 1.9f, 0.20f);
 
             for (int i = 0; i < wallFragmentCount; i++)
             {
@@ -68,6 +69,7 @@ namespace rhcodepi
                 else
                     wallPiece.transform.SetParent(wall2.transform);
             }
+            rotationZ = 0;
 
             wall1.transform.localPosition = Vector3.zero;
             wall2.transform.localPosition = Vector3.zero;
@@ -84,7 +86,7 @@ namespace rhcodepi
         void AddStar(GameObject fragment)
         {
             GameObject starObj = Instantiate(star, transform.position, Quaternion.identity);
-
+            
             starObj.transform.SetParent(fragment.transform);
             starObj.transform.localPosition = new Vector3(0, 0.8f, -0.1f);
         }

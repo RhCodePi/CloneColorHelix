@@ -10,10 +10,10 @@ namespace rhcodepi
         private Color passesColor, cancelColor;
         public static GameManager instance;
         [SerializeField] private int wallDistance = 6, wallSpawnPos = 6;
-        [SerializeField] GameObject helix, finishLine;
-        bool colorBump;
-        GameObject[] walls2;
-        private int wallCount, colorBumpZ;
+        [SerializeField] GameObject helix, finishLine, text;
+        bool colorBump, star, passes;
+        GameObject[] walls2, walls1;
+        private int wallCount, colorBumpZ, score;
         void Awake()
         {
             instance = this;
@@ -22,19 +22,21 @@ namespace rhcodepi
 
         void Start()
         {
-            PlayerPrefs.GetInt("Level", 1);
+            if (PlayerPrefs.GetInt("Level") == 0)
+                PlayerPrefs.SetInt("Level", 1);
             GenerateLevel();
         }
 
         void Update()
         {
-            Debug.Log(PlayerPrefs.GetInt("Level"));
+            SetScore();
         }
 
         public void GenerateLevel()
         {
-            DeleteWall();
-            if (PlayerPrefs.GetInt("Level") >= 0 && PlayerPrefs.GetInt("Level") <= 3)
+            GenerateColor();
+
+            if (PlayerPrefs.GetInt("Level") >= 1 && PlayerPrefs.GetInt("Level") <= 3)
                 wallCount = 8;
             else if (PlayerPrefs.GetInt("Level") >= 4 && PlayerPrefs.GetInt("Level") <= 6)
                 wallCount = 10;
@@ -42,8 +44,37 @@ namespace rhcodepi
                 wallCount = 12;
 
             wallSpawnPos = wallDistance;
+            DeleteWall();
             colorBump = false;
             SpawnWall();
+        }
+
+        void SetScore()
+        {
+            walls1 = GameObject.FindGameObjectsWithTag("Collectable");
+            if (walls1.Length > wallCount)
+                wallCount = walls1.Length;
+            if (wallCount > walls1.Length)
+            {
+                if (passes)
+                {
+                    passes = false;
+                    if (star)
+                    {
+                        star = false;
+                        score += PlayerPrefs.GetInt("Level") * 2;
+                        text.GetComponent<TextMesh>().text = $"Perfect {PlayerPrefs.GetInt("Level") * 2}";
+                        text.GetComponent<Animator>().SetTrigger("Popup");
+                    }
+                    else
+                    {
+                        score += PlayerPrefs.GetInt("Level");
+                        text.GetComponent<TextMesh>().text = $"{PlayerPrefs.GetInt("Level")}";
+                        text.GetComponent<Animator>().SetTrigger("Popup");
+                    }
+                        
+                }
+            }
         }
 
         public void GenerateColor()
@@ -55,7 +86,6 @@ namespace rhcodepi
                 cancelColor = colors[Random.Range(0, colors.Length)];
 
             Ball._CurrentColor = passesColor;
-            Debug.Log("rese");
         }
 
         void SpawnWall()
@@ -98,15 +128,18 @@ namespace rhcodepi
                 {
                     Destroy(walls2[i].transform.parent.gameObject);
                 }
-
-            Destroy(GameObject.FindGameObjectWithTag("ColorBump"));
+            if (PlayerPrefs.GetInt("Level") > 4)
+                Destroy(GameObject.FindGameObjectWithTag("ColorBump"));
         }
 
         public Color _PassesColor { get => passesColor; set { passesColor = value; } }
         public Color _CancelColor { get => cancelColor; set { cancelColor = value; } }
+        public Color[] _Colors { get => colors; }
         public int _WallSpawnPos { get => wallSpawnPos; }
         public int _ColorBumpZ { get => colorBumpZ; }
-        public Color[] _Colors { get => colors; }
+        public bool _isStar { get => star; set { star = value; } }
+        public bool _IsPasses { get => passes; set { passes = value; } }
+        public int _Score { get => score; set { score = value; } }
     }
 
 }

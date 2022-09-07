@@ -36,6 +36,8 @@ namespace rhcodepi
         {
             return transform.eulerAngles.z % bound;
         }
+
+        public bool isMoveable{get => moveable; set{moveable = value;}}
     }
 }
 

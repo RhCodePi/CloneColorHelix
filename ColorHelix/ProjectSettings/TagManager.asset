@@ -8,6 +8,8 @@ TagManager:
   - Cancel
   - Pass
   - ColorBump
+  - Collectable
+  - Star
   layers:
   - Default
   - TransparentFX
@@ -17,8 +19,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Pass
+  - Cancel
   - 
   - 
   - 

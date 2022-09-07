@@ -11,13 +11,15 @@ namespace rhcodepi
         [SerializeField] float speed, accleration;
         private static Color currentColor;
         float lerpAmount;
-        bool isChange;
-        void Start() => move = false;
+        bool isChange, gameOver;
+        [SerializeField] SpriteRenderer splash;
 
+
+        void Start() => move = false;
         void Update()
         {
             // check pressing the scrren
-            if (Touch.isPressing)
+            if (Touch.isPressing && !gameOver)
                 move = true;
             // then if pressing the scrren, ball has moving
             if (move)
@@ -30,6 +32,7 @@ namespace rhcodepi
         void UpdateColor()
         {
             transform.GetComponent<MeshRenderer>().material.color = currentColor;
+            
             // if passing the colorbump then, the ball color chnage one second, what is color the colorBump. 
             if (isChange && PlayerPrefs.GetInt("Level") > 4)
             {
@@ -44,7 +47,9 @@ namespace rhcodepi
         {
             if (other.CompareTag("Pass"))
             {
+                GameManager.instance._IsPasses = true;
                 Destroy(other.transform.gameObject);
+                
             }
             if (other.CompareTag("ColorBump"))
             {
@@ -61,6 +66,10 @@ namespace rhcodepi
             {
                 NextLevel();
             }
+            if(other.CompareTag("Star"))
+            {
+                GameManager.instance._isStar = true;
+            }
         }
 
         void NextLevel()
@@ -75,6 +84,7 @@ namespace rhcodepi
 
             PlayerPrefs.SetInt("Level", PlayerPrefs.GetInt("Level") + 1);
             GameManager.instance.GenerateColor();
+            Camera.main.GetComponent<CameraFollow>().SetFlash();
             move = false;
             posZ = -8f;
             GameManager.instance.GenerateLevel();
@@ -88,10 +98,27 @@ namespace rhcodepi
 
         public IEnumerator CoGameOver()
         {
-            GameManager.instance.GenerateLevel();
+            gameOver = true;
+            Camera.main.GetComponent<CameraFollow>().enabled = false;
+            GetComponent<MeshRenderer>().enabled = false;
+            GetComponent<SphereCollider>().enabled = false;
+            splash.transform.localPosition = new Vector3(0, 1, 0.2f);
+
+            splash.enabled = true;
+            splash.color = currentColor + new Color(0, 0, 0, 255);
             move = false;
-            posZ = -8;
-            yield break;
+            Helix.instance.isMoveable = false;
+            yield return new WaitForSeconds(1.5f);
+            Camera.main.GetComponent<CameraFollow>().SetFlash();
+            GameManager.instance.GenerateLevel();
+            GameManager.instance._Score = 0;
+            splash.enabled = false;
+            posZ = -8f;
+            GetComponent<MeshRenderer>().enabled = true;
+            GetComponent<SphereCollider>().enabled = true;
+            gameOver = false;
+            Helix.instance.isMoveable = true;
+            Camera.main.GetComponent<CameraFollow>().enabled = true;
         }
         public static bool _Move { get => move; set { move = value; } }
         public static float _PosZ { get => posZ; set { posZ = value; } }
